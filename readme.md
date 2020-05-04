@@ -1,6 +1,7 @@
 # Various scripts to help rename photos
+For photos ending in ```.jpg``` or ```.jpeg``` taken with a phone or camera with exif date and time stamps.
 
-## ```photo_renamer.py```
+### ```photo_renamer.py```
 A script to rename photos according to their capture date and name defined by the user. Run like:
 
 ```
