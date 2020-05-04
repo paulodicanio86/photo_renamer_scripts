@@ -8,6 +8,7 @@ A script to rename photos according to their capture date and name defined by th
 ```
 python photo_renamer.py /some/path/to/folder name
 ```
+
 The outcome for a single jpg file could be:
 ```
 20200228-160309-London.jpg
@@ -19,17 +20,20 @@ Like the ```photo_renamer.py```	but for	photo files with wrong Exif data (but wh
 ```
 python photo_renamer_date_shift.py /some/path/to/folder name
 ```
+
 The outcome for a single jpg file could be:
 ```
 20200228-160309-New_York.jpg
 ```
 
 ### photo_renamer_set_date_and_counter.py
-Like the ```photo_renamer.py``` but for photo files with no or wrong Exif data. You will be prompted to enter a year, month and day. It will then give each photo that date and simply append an integer counter to the end of the new filename.
+Like the ```photo_renamer.py``` but for photo files with no or wrong Exif data. You will be prompted to enter a year, month and day.
+It will then give each photo that date and simply append an integer counter to the end of the new filename.
 
 ```
 python photo_renamer_set_date_and_counter.py /some/path/to/folder name
 ```
+
 The outcome for a single jpg file could be:
 ```
 20200228-160309-Tokyo_1.jpg
