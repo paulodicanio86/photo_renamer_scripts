@@ -112,7 +112,8 @@ def get_start_date():
     day = int(input('Enter a day (DD): '))
     hour = int(input('Enter an hour (hh): '))
     minute = int(input('Enter a minute (mm): '))
-    return  datetime.datetime(year, month, day, hour, minute)
+    second = int(input('Enter a second (ss): '))
+    return  datetime.datetime(year, month, day, hour, minute, second)
 
 if __name__ == "__main__":
 
