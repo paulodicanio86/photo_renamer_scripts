@@ -42,7 +42,7 @@ def rename_photos(_dir, name_tag):
 
             # Check the rare case when we have duplicate time tag and if so, append counter to name
             if time_tag in time_tag_list:
-                name_tag_new = name_tag + '_' + str(counter)
+                name_tag_new = name_tag + '-' + str(counter)
                 counter += 1
             else:
                 name_tag_new = name_tag
