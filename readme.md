@@ -3,13 +3,13 @@ For photos ending in ```.jpg``` or ```.jpeg``` taken with a phone or camera with
 Set up a virtual environment with the ```requirements.txt``` file. 
 
 ### photo_renamer.py
-A script to rename photos (and videos) according to their capture date and name defined by the user. Run like:
+A script to rename photos and videos according to their file creation date and time (or EXIF time taken if available), and a name defined by the user. Run like:
 
 ```
 python photo_renamer.py /some/path/to/folder name
 ```
 
-The outcome for a single jpg file could be:
+The outcome for a single image file could be (in this case 'London' was chosen as name):
 ```
 20200228-160309-London.jpg
 ```
