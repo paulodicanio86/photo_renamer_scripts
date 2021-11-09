@@ -1,9 +1,11 @@
 #! /usr/bin/env python3
 
 import os
-import datetime
 import argparse
 import sys
+from datetime import datetime
+from PIL import Image
+from PIL.ExifTags import TAGS
 
 
 def validate_user_inputs():
@@ -27,31 +29,79 @@ def validate_user_inputs():
     return _dir, name_tag
 
 
+def get_exif_value(fn, field):
+    ret = {}
+    i = Image.open(fn)
+    info = i._getexif()
+    if info is not None:
+        for tag, value in info.items():
+            decoded = TAGS.get(tag, tag)
+            ret[decoded] = value
+        # uncomment to show all available EXIF fields
+        #print(ret)
+        if field in ret:
+            return ret[field]
+    return None
+
+
+def get_DateTimeOriginal(fn):
+    dto_str = get_exif_value(fn, "DateTimeOriginal")
+    if dto_str is not None:
+        dto_obj = datetime.strptime(dto_str, '%Y:%m:%d %H:%M:%S')
+        time_tag = dto_obj.strftime('%Y%m%d-%H%M%S')
+        return time_tag
+    # if EXIF information does not exist use the file creation date:
+    else:
+        return get_CreationDate(fn)
+
+
+def get_CreationDate(path):
+    ctime = os.stat(path).st_mtime
+    return datetime.fromtimestamp(ctime).strftime('%Y%m%d-%H%M%S')
+
+
 def rename_photos(_dir, name_tag):
-    #  consider only image and movie files
-    extensions = ['jpg', 'jpeg', 'mov', 'mp4']
+    # consider only image and movie files
+    image_extensions = ['jpg', 'jpeg']
+    video_extensions = ['mov', 'mp4']
+    extensions = image_extensions + video_extensions
+    file_list = []
+    
     time_tag_list = []
     counter = 2  # for the rare case when 2 or more photos have the same timestamp (see below)
     for fn in os.listdir(_dir):
-        # Check if files has the above extensions, else ignore
         if any(fn.lower().endswith(ext) for ext in extensions):
-            ext = fn.lower().split('.')[-1]
-            oldpath = os.path.join(_dir, fn)
-            ctime = os.stat(oldpath).st_birthtime  # creation date time stamp
-            time_tag = datetime.datetime.fromtimestamp(ctime).strftime('%Y%m%d-%H%M%S')
+            file_list.append(fn)
 
-            # Check the rare case when we have duplicate time tag and if so, append counter to name
-            if time_tag in time_tag_list:
-                name_tag_new = name_tag + '-' + str(counter)
-                counter += 1
-            else:
-                name_tag_new = name_tag
-                time_tag_list += [time_tag]
-                #  reset
-                counter = 2
-            newpath = os.path.join(_dir, '{}-{}.{}'.format(time_tag, name_tag_new, ext))
-            print('---------\nOLD:\t{}\nNEW:\t{}'.format(oldpath, newpath))
-            os.rename(oldpath, newpath)
+    for fn in file_list:
+        oldpath = os.path.join(_dir, fn)
+        ext = fn.lower().split('.')[-1]
+        
+        # Videos: use OS creation time stamp
+        if ext in video_extensions:
+            time_tag = get_CreationDate(oldpath)
+        # Images: use EXIF time stamp
+        elif ext in image_extensions:
+            time_tag = get_DateTimeOriginal(oldpath)
+            
+        # check the rare case when we have duplicate time tag and if so, append counter to name
+        if time_tag in time_tag_list:
+            name_tag_new = name_tag + '-' + str(counter)
+            counter += 1
+        else:
+            name_tag_new = name_tag
+            time_tag_list.append(time_tag)
+            # reset
+            counter = 2
+
+        # rename
+        newpath = os.path.join(_dir, '{}-{}.{}'.format(time_tag, name_tag_new, ext))
+        print('---------\nOLD:\t{}\nNEW:\t{}'.format(oldpath, newpath))
+        os.rename(oldpath, newpath)
+    pass
+
+
+def print_giraffe():
     print("""\
                                            ._ o o
                                            \_`-)|_
@@ -63,13 +113,13 @@ def rename_photos(_dir, name_tag):
                               ,"   ##    /
                         """)
     print('-> INFO: FINISHED!')
-    pass
 
 
 if __name__ == "__main__":
     _dir, name_tag = validate_user_inputs()
     rename_photos(_dir, name_tag)
-
+    print_giraffe()
+    
     pass
 
 # ---------------------------
